@@ -1,11 +1,24 @@
 let noteForm = document.getElementById('note-form');
 let noteInput = document.getElementById('note-input');
+
 let notesContainer = document.getElementById('notes-container');
+
+let notes = JSON.parse(localStorage.getItem('notes')) || [];
+
+// Load notes from local storage
+function loadNotes() {
+    notes.forEach(noteText => {
+        addNoteToList(noteText);
+    });
+}
+loadNotes();
 
 noteForm.addEventListener('submit', function(event) {
     event.preventDefault();
     let noteText = noteInput.value.trim();
     if (noteText !== '') {
+        notes.push(noteText);
+        localStorage.setItem('notes', JSON.stringify(notes));
         addNoteToList(noteText);
         noteInput.value = '';
     }
@@ -16,14 +29,18 @@ function addNoteToList(noteText) {
     noteDiv.classList.add('note');
     noteDiv.textContent = noteText;
 
-    let delete_Btn = document.createElement('button');
-    delete_Btn.textContent = 'Delete';
-    delete_Btn.classList.add('btn');
-    delete_Btn.addEventListener('click', function() {
+    let deleteBtn = document.createElement('button');
+    deleteBtn.textContent = 'Delete';
+    deleteBtn.classList.add('btn');
+    deleteBtn.addEventListener('click', function() {
+        let index = notes.indexOf(noteText);
+        if (index > -1) {
+            notes.splice(index, 1);
+            localStorage.setItem('notes', JSON.stringify(notes));
+        }
         notesContainer.removeChild(noteDiv);
     });
 
-    noteDiv.appendChild(delete_Btn);
+    noteDiv.appendChild(deleteBtn);
     notesContainer.appendChild(noteDiv);
 }
-
